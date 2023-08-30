@@ -1,28 +1,19 @@
 import sys
 import json
 
-inputFile = ''
-outputFile = ''
-
-outputContent = {}
-
 # Super janky script to parse right_student_schedule.jsp and save as readable json
-
-def getInput():
-
-    global inputFile, outputFile
-
-    inputFile = input("Input file: ")
-    outputFile = input("Output file: ")
 
 def main():
 
-    global inputFile, outputFile
-    
-    # Set input and output file if not specified
-    if inputFile == '': inputFile = 'right_student_schedule.jsp'
-    if outputFile == '': outputFile = 'output.json'
+    outputContent = {}
 
+    try:
+        inputFile = sys.argv[0]
+        outputFile = sys.argv[1]
+    except:
+        inputFile = 'right_student_schedule.jsp'
+        outputFile = 'output.json'
+    
     with open(inputFile,'r') as f:
 
         line = 0 # Start at line 0
@@ -58,6 +49,8 @@ def main():
                         weeks.append(n)
                 else: # If not a range, just add the week
                     weeks.append(int(y))
+            
+            weeks.sort()
 
 
             # Extract lesson ID
@@ -97,10 +90,13 @@ def main():
 
             room = x[sectionStartIndex:sectionEndIndex].strip('\n')
 
+            if name == 'Lunch': room = '' # Prevent weird extraction of non-existent lunch room
+
 
             # Add all extracted values to entry
             entry['name'] = name
             entry['room'] = room
+            entry['day'] = "" # No idea how to do this
             entry['starts'] = classStart
             entry['ends'] = classEnd
             entry['weeks'] = weeks
@@ -110,16 +106,11 @@ def main():
         f.close()
 
     with open(outputFile, 'w') as file:
-        json.dump(outputContent, file)
+        json.dump(outputContent, file, indent=4)
     
 
         
             
 
 if __name__ == '__main__':
-    getInput()
-else:
-    inputFile = sys.argv[0]
-    outputFile = sys.argv[1]
-
-main()
+    main()
