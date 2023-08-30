@@ -64,12 +64,12 @@ function extract() {
         outEnd = scheduleItemTimesArray[1];
 
         // do calculations for which day it is
-        let endTrim = outEnd.replace(/:/g,'');
-        if (endTrim < lastEndtime) {
+        let startTrim = Number(outStart.replace(/:/g,''));
+        if (startTrim < lastEndtime) {
             console.log(day);
             day += 1;
         }
-        lastEndtime = endTrim;
+        lastEndtime = Number(outEnd.replace(/:/g,''));
         switch(day) {
             case 1:
                 outDay = 'mon';
