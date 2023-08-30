@@ -1,1 +1,4 @@
-console.log("[ Loaded grab.js ]")
+
+function extractSchedule() {
+    console.log("[ Loaded grab.js ]")
+}
