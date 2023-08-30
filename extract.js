@@ -1,5 +1,8 @@
 console.log('[ Loaded schedule extractor ]');
 
+// Configurative variables
+const sourceLink = 'https://github.com/ZervoTheProtogen/schoolsoft-schema-parser/blob/main/grab.js'
+
 var injectElementParent = document.getElementsByClassName('span6right')[0];
 
 const newsContainer = document.getElementById('news_con');
@@ -9,14 +12,14 @@ const injectFrameElement = document.createElement("div")
 injectFrameElement.style = "background-color:#000;border-radius:5px;justify-content:center;text-align:center;padding:15px;"
 injectElementParent.appendChild(injectFrameElement)
 
-const injectMessageElement = document.createElement("h2");
-injectMessageElement.textContent = "[ Schedule Extraction Script 1.0 ]";
-injectMessageElement.style = "color:#05f735;";
-injectFrameElement.appendChild(injectMessageElement);
+const injectTitleElement = document.createElement("h2");
+injectTitleElement.textContent = "[ Schedule Extraction Script 1.0 ]";
+injectTitleElement.style = "color:#05f735;";
+injectFrameElement.appendChild(injectTitleElement);
 
 const injectButtonElement = document.createElement("button");
 injectButtonElement.textContent = "start extraction";
-injectButtonElement.style = "background-color:#fff;border-radius:15px;font-size:15px;"
+injectButtonElement.style = "background-color:#303030;border:none;border-radius:15px;color:white;padding:15px 32px;text-align:center;text-decoration:none;display:inline-block;font-size:16px;"
 injectButtonElement.addEventListener("click", extract, false);
 injectFrameElement.appendChild(injectButtonElement);
 
@@ -34,11 +37,77 @@ function extract() {
     injectFrameElement.appendChild(injectConsoleElement);
     log("----- Extraction start -----");
 
-    var scheduleItemArray = document.getElementsByClassName('cal-lesson');
+    var jsonArray = [] // prepare output json object
 
-    for (let i = 0; i < scheduleItemArray.length; i++) {
-        log(scheduleItemArray[i].textContent);
+    var scheduleItemArray = Array.from(document.getElementsByClassName('cal-lesson')); // get all classes
+
+    var day = 1;
+    var lastEndtime = 0
+
+    for (let x in scheduleItemArray) {
+
+        // prepare output variables
+        var outId = x;
+        var outName = '';
+        var outStart = '';
+        var outEnd = '';
+        var outDay = '';
+
+        log(scheduleItemArray[x].textContent);
+
+        let scheduleItemArraySplit = scheduleItemArray[x].textContent.split(" "); // split current class string
+
+        let scheduleItemTimesArray = scheduleItemArraySplit[0].split("-"); // split times section into 
+        
+        // write times to output variables
+        outStart = scheduleItemTimesArray[0];
+        outEnd = scheduleItemTimesArray[1];
+
+        // do calculations for which day it is
+        let endTrim = outEnd.replace(/:/g,'');
+        if (endTrim < lastEndtime) {
+            console.log(day);
+            day += 1;
+        }
+        lastEndtime = endTrim;
+        switch(day) {
+            case 1:
+                outDay = 'mon';
+                break;
+            case 2:
+                outDay = 'tue';
+                break;
+            case 3:
+                outDay = 'wed';
+                break;
+            case 4:
+                outDay = 'thu';
+                break;
+            case 5:
+                outDay = 'fri';
+                break;
+            default:
+                outDay = '';
+                break;
+        } 
+
+        // write name to output variable
+        outName = scheduleItemArraySplit[1];
+
+        // write output variables to object
+        const outObject = {
+            id: outId,
+            name: outName,
+            start: outStart,
+            end: outEnd,
+            day: outDay
+        };
+
+        // assign object to main output array
+        jsonArray.push(outObject);
     }
-    
+
+    console.log(jsonArray);
+
     log("----- Extraction end -----")
 }
