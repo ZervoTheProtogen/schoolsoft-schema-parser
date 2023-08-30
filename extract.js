@@ -109,5 +109,7 @@ function extract() {
 
     console.log(jsonArray);
 
+    log(JSON.stringify(jsonArray));
+
     log("----- Extraction end -----")
 }
