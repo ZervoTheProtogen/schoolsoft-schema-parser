@@ -111,5 +111,12 @@ function extract() {
 
     log(JSON.stringify(jsonArray));
 
-    log("----- Extraction end -----")
+    log("----- Extraction end -----");
+
+    sendresult();
+
+}
+
+function sendresult() {
+    injectFrameElement.remove();
 }
